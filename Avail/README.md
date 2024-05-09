@@ -24,3 +24,47 @@ sudo apt-get install make clang pkg-config libssl-dev build-essential
 ```
 screen -S alight
 ```
+### Install Avail Light Client
+```
+cd
+wget https://github.com/availproject/avail-light/releases/download/v1.7.8/avail-light-linux-amd64.tar.gz
+tar -xvzf avail-light-linux-amd64.tar.gz
+mv avail-light-linux-amd64 avail-light
+rm -rf avail-light-linux-amd64.tar.gz
+```
+
+
+
+#### Let's create the service file
+```
+sudo tee /etc/systemd/system/availd.service > /dev/null <<EOF
+[Unit]
+Description=Avail Light Client
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+User=root
+ExecStart=/root/avail-light --network goldberg
+Restart=always
+RestartSec=120
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+#### Let's start
+```
+sudo systemctl daemon-reload
+systemctl enable availd
+sudo systemctl restart availd
+```
+
+## Logs
+```
+journalctl -u availd -fo cat
+```
+
+#### Final block display
+```
+curl "http://localhost:7000/v1/latest_block"
+```
